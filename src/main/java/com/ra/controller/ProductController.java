@@ -2,7 +2,8 @@ package com.ra.controller;
 
 import com.ra.model.dto.request.ProductDTO;
 import com.ra.model.dto.response.ProductResponse;
-import com.ra.model.entity.Product;
+import com.ra.model.entity.Catalog;
+import com.ra.service.catalog.CatalogService;
 import com.ra.service.product.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +17,26 @@ import java.util.List;
 @RequestMapping("/api/v1/products")
 public class ProductController {
     private final ProductService productService;
+    private final CatalogService catalogService;
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, CatalogService catalogService) {
         this.productService = productService;
+        this.catalogService = catalogService;
     }
 
     @GetMapping
     public ResponseEntity<?> renderAll(){
         List<ProductResponse> list = productService.getAll();
+        if (list.isEmpty())
+            return new ResponseEntity<>("Chưa có sản phẩm", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody ProductDTO productDTO){
+        Catalog catalog = catalogService.findById(productDTO.getCatalogId());
+        if (catalog == null)
+            return new ResponseEntity<>("Mã thể loại này không tồn tại", HttpStatus.NOT_FOUND);
         ProductResponse productResponse = productService.save(productDTO);
         return new ResponseEntity<>(productResponse,HttpStatus.CREATED);
     }
@@ -36,12 +44,16 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable long id){
         ProductResponse productResponse = productService.findById(id);
+        if (productResponse == null)
+            return new ResponseEntity<>("Sản phẩm không tồn tại", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable long id, @RequestBody ProductDTO productDTO){
         ProductResponse productUpdate = productService.update(id, productDTO);
+        if (productUpdate == null)
+            return new ResponseEntity<>("Sản phẩm không tồn tại", HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(productUpdate, HttpStatus.CREATED);
     }
 

@@ -1,6 +1,7 @@
 package com.ra.model.dto.request;
 
 import com.ra.model.entity.Catalog;
+import com.ra.validate.product.ProductUnique;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ProductDTO {
     @NotBlank
+    @ProductUnique
     private String productName;
     @NotBlank
     private double price;
