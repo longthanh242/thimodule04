@@ -51,4 +51,12 @@ public class ProductController {
         productService.delete(id);
         return new ResponseEntity<>("Xóa thành công", HttpStatus.OK);
     }
+
+    @GetMapping
+    public ResponseEntity<?> searchByName(@RequestParam("name") String productName){
+        List<ProductResponse> productList= productService.searchByName(productName);
+        if (productList.isEmpty())
+            return new ResponseEntity<>("Không có sản phẩm", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(productList, HttpStatus.OK);
+    }
 }

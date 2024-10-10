@@ -88,4 +88,22 @@ public class ProductServiceImp implements ProductService {
     public void delete(long productId) {
         productRepository.deleteById(productId);
     }
+
+    @Override
+    public List<ProductResponse> searchByName(String producName) {
+        List<Product> productList = productRepository.findProductByProductNameContainingIgnoreCase(producName);
+        if (!productList.isEmpty())
+            return productList.stream()
+                    .map(product -> new ProductResponse(
+                            product.getProductId(),
+                            product.getProductName(),
+                            product.getPrice(),
+                            product.getDescription(),
+                            product.getImgURL(),
+                            product.isStatus(),
+                            product.getCatalog().getCatName()
+                    ))
+                    .collect(Collectors.toList());
+        return null;
+    }
 }
