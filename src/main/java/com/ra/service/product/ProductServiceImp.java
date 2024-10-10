@@ -50,6 +50,7 @@ public class ProductServiceImp implements ProductService {
                 .imgURL(imgURL)
                 .price(productDTO.getPrice())
                 .catalog(catalog)
+                .status(true)
                 .build();
         Product productNew = productRepository.save(product);
         return ProductResponse.builder()
@@ -80,8 +81,27 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public Product update(Product product) {
-        return productRepository.save(product);
+    public ProductResponse update(long productId, ProductDTO productDTO) {
+        String imgURL = uploadFileService.uploadFileToLocal(productDTO.getImage());
+        Catalog catalog = catalogRepository.findById(productDTO.getCatalogId()).orElse(null);
+        Product product = Product.builder()
+                .productId(productId)
+                .productName(productDTO.getProductName())
+                .description(productDTO.getDescription())
+                .imgURL(imgURL)
+                .price(productDTO.getPrice())
+                .catalog(catalog)
+                .build();
+        Product productUpdate = productRepository.save(product);
+        return ProductResponse.builder()
+                .productId(productUpdate.getProductId())
+                .productName(productUpdate.getProductName())
+                .price(productUpdate.getPrice())
+                .description(productUpdate.getDescription())
+                .imgURL(productUpdate.getImgURL())
+                .status(productUpdate.isStatus())
+                .catalogName(productUpdate.getCatalog().getCatName())
+                .build();
     }
 
     @Override
