@@ -21,5 +21,6 @@ public class ProductDTO {
     @NotBlank
     private String description;
     private MultipartFile image;
+    private boolean status;
     private int catalogId;
 }

@@ -70,19 +70,4 @@ public class UploadFileService {
             throw new RuntimeException(e);
         }
     }
-    // Method to delete the file from local and Firebase
-    public void deleteFileFromLocal(String fileName) {
-        // Delete from local storage
-        String pathUpload = servletContext.getRealPath("/") + "/uploads";
-        File fileToDelete = new File(pathUpload + File.separator + fileName);
-        if (fileToDelete.exists()) {
-            if (!fileToDelete.delete()) {
-                throw new RuntimeException("Failed to delete local file: " + fileName);
-            }
-        }
-
-        // Delete from Firebase Storage
-        BlobId blobId = BlobId.of(BUCK_NAME, fileName);
-        storage.delete(blobId);
-    }
 }

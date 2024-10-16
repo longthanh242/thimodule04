@@ -83,10 +83,14 @@ public class ProductServiceImp implements ProductService {
     @Override
     public ProductResponse update(long productId, ProductDTO productDTO) {
         Product product = productRepository.findById(productId).orElse(null);
-        if (product != null && product.getImgURL() != null)
-            uploadFileService.deleteFileFromLocal(product.getImgURL());
-        String imgURL = uploadFileService.uploadFileToLocal(productDTO.getImage());
         Catalog catalog = catalogRepository.findById(productDTO.getCatalogId()).orElse(null);
+
+        String imgURL = null;
+        if (product != null) {
+            imgURL = product.getImgURL();
+        }
+        if (productDTO.getImage() != null)
+            imgURL = uploadFileService.uploadFileToLocal(productDTO.getImage());
         product = Product.builder()
                 .productId(productId)
                 .productName(productDTO.getProductName())
@@ -94,6 +98,7 @@ public class ProductServiceImp implements ProductService {
                 .imgURL(imgURL)
                 .price(productDTO.getPrice())
                 .catalog(catalog)
+                .status(productDTO.isStatus())
                 .build();
         Product productUpdate = productRepository.save(product);
         return ProductResponse.builder()
